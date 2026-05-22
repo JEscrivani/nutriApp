@@ -27,7 +27,7 @@ export default function Home() {
 
     return (
         <main>
-            <p>placeholder</p>
+            <p>PAGINA NUTRICIONISTA</p>
             <button onClick={handleLogout}>Sair</button>
             {error && <p>{error}</p>}
         </main>

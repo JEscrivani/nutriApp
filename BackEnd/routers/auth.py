@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Response, Request
 from models import Users, UserRole, Gender
 from database import SessionLocal
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from typing import Annotated
 from pydantic import BaseModel, Field
 from passlib.context import CryptContext
@@ -76,9 +77,51 @@ def get_current_user(request: Request):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='ERRO ao validar usuário.')
 user_dependency = Annotated[dict, Depends(get_current_user)]
 
+def validate_cpf(cpf: str):
+    if not cpf.isdigit():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="CPF deve conter apenas números.")
+
+    if len(cpf) != 11:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="CPF deve conter 11 dígitos.")
+    
+    number = cpf[0 : 9]
+    
+    sum = 0
+    multiplier = 10
+    for c in range(0, 9):
+        sum += int(number[c]) * multiplier
+        multiplier -= 1
+    mod = sum % 11
+    digit = 11 - mod
+    digit = "0" if digit >= 10 else str(digit)
+    number += digit
+
+    sum = 0
+    multiplier = 11
+    for c in range(0, 10):
+        sum += int(number[c]) * multiplier
+        multiplier -= 1
+    mod = sum % 11
+    digit = 11 - mod
+    digit = "0" if digit >= 10 else str(digit)
+    number += digit
+
+    if number != cpf:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="CPF inexistente")
+
 # ROTAS
 @router.post('/', status_code=status.HTTP_201_CREATED)
 async def create_user(db: db_dependency, request: CreateUserRequest):
+    validate_cpf(request.cpf)
+
+    validade_unique = db.query(Users).filter(Users.cpf == request.cpf).first()
+    if validade_unique:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="CPF já cadastrado")
+    
+    validade_unique = db.query(Users).filter(Users.email == request.email).first()
+    if validade_unique:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="E-Mail já cadastrado")
+
     user = Users(
         name=request.name,
         email=request.email,
@@ -88,8 +131,12 @@ async def create_user(db: db_dependency, request: CreateUserRequest):
         birthday=request.birthday,
         gender=request.gender
     )
-    db.add(user)
-    db.commit()
+    try:
+        db.add(user)
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Informações cadastradas em duplicidade.")
 
 @router.post('/login', status_code=status.HTTP_204_NO_CONTENT)
 async def login(db: db_dependency, form_data: Annotated[OAuth2PasswordRequestForm, Depends()], response: Response):
@@ -108,14 +155,18 @@ async def login(db: db_dependency, form_data: Annotated[OAuth2PasswordRequestFor
     )
 
 @router.delete('/logout', status_code=status.HTTP_204_NO_CONTENT)
-async def login(response: Response):
+async def logout(response: Response):
     response.delete_cookie("token")
 
 @router.get('/validate', status_code=status.HTTP_200_OK)
-async def validate(user: user_dependency):
+async def validate(db: db_dependency, user: user_dependency):
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='ERRO ao validar usuário.')
     
+    user_model = db.query(Users).filter(Users.id == user.get('user_id')).first()
+    if user_model is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Usuário não cadastrado.')
+
     return {
         'id': user.get('user_id'),
         'role': user.get('user_role')
