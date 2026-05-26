@@ -26,24 +26,25 @@ export async function middleware(request: NextRequest) {
                 return NextResponse.redirect(new URL("/login", request.url))
             }
             if (userData!.role === "nutricionista") {
-                return NextResponse.redirect(new URL("/menu/nutricionista", request.url))
+                return NextResponse.redirect(new URL("/menu/dietitians", request.url))
             } else {
-                return NextResponse.redirect(new URL("/menu/cliente", request.url))
+                return NextResponse.redirect(new URL("/menu/client", request.url))
             }
-        case "/menu/nutricionista":
+        case "/menu/dietitians":
+        case "/client/new":
             if (!validToken) {
                 return NextResponse.redirect(new URL("/login", request.url))
             }
             if (userData!.role != "nutricionista") {
-                return NextResponse.redirect(new URL("/menu/cliente", request.url))
+                return NextResponse.redirect(new URL("/menu/client", request.url))
             }
             return NextResponse.next();
-        case "/menu/cliente":
+        case "/menu/client":
             if (!validToken) {
                 return NextResponse.redirect(new URL("/login", request.url))
             }
             if (userData!.role === "nutricionista") {
-                return NextResponse.redirect(new URL("/menu/nutricionista", request.url))
+                return NextResponse.redirect(new URL("/menu/dietitians", request.url))
             }
             return NextResponse.next();
         default:
@@ -53,5 +54,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ["/login", "/menu/:path*"]
+    matcher: ["/login", "/menu/:path*", "/client/new"]
 }

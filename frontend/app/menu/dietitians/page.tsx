@@ -25,10 +25,15 @@ export default function Home() {
         }
     }
 
+    const handleNewClient = async () => {
+        router.push('/client/new')
+    }
+
     return (
         <main>
             <p>PAGINA NUTRICIONISTA</p>
             <button onClick={handleLogout}>Sair</button>
+            <button onClick={handleNewClient}>Cadastrar novo cliente</button>
             {error && <p>{error}</p>}
         </main>
     )
