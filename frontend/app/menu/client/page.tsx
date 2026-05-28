@@ -16,7 +16,7 @@ export default function Home() {
 
             if (!response.ok) {
                 const err = await response.json();
-                throw new Error(err.detail ?? "Erro ao validar usuário.")
+                throw new Error(err.detail ?? "Erro ao encerrar sessão.")
             }
 
             router.push('/login')

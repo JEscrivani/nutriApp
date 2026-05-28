@@ -1,0 +1,67 @@
+.page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+}
+
+.sidebar {
+  background: #202020;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+.personalInfo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.userIcon {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+}
+
+.navigator {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 10px;
+}
+
+.tab, .activeTab {
+  cursor: pointer;
+  padding: 10px;
+  width: 100%;
+  text-align: left;
+  border-radius: 10px;
+}
+
+.activeTab {
+  background-color: white;
+  color: black;
+  font-weight: bold;
+}
+
+.tab:hover {
+  background-color: white;
+  color: black;
+}
+
+.logout {
+  cursor: pointer;
+  margin-top: auto;
+  align-self: end;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logoutIcon {
+  width: 50px;
+  height: 50px;
+}
