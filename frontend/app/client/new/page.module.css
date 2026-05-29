@@ -61,6 +61,12 @@
   font-weight: 600;
 }
 
+.divButtons {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+}
+
 .newClientButton {
   background: #18181b;
   color: white;

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import auth
+from routers import auth, clients
 from database import engine
 import models
 
@@ -11,6 +11,7 @@ origins = [
 
 app = FastAPI()
 app.include_router(auth.router)
+app.include_router(clients.router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,

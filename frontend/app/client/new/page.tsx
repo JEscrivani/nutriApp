@@ -127,9 +127,15 @@ export default function Home() {
 
                     {error && <p className={styles.loginError}>{error}</p>}
 
-                    <button type='submit' className={styles.newClientButton}>
-                        {isLoading? 'Cadastrando...' : 'Cadastrar'}
-                    </button>
+                    <div className={styles.divButtons}>
+                        <button type='button' className={styles.newClientButton} onClick={() => {router.push("/menu")}}>
+                            Cancelar
+                        </button>
+
+                        <button type='submit' className={styles.newClientButton}>
+                            {isLoading? 'Cadastrando...' : 'Cadastrar'}
+                        </button>
+                    </div>
                 </form>
             </section>
         </main>
