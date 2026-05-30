@@ -8,6 +8,7 @@ export default function Home() {
     const [name, setName] = useState<string>("");
     const [cpf, setCpf] = useState<string>("");
     const [email, setEmail] = useState<string>("");
+    const [cellphone, setCellphone] = useState<string>("");
     const [birthday, setBirthday] = useState<string>("");
     const [gender, setGender] = useState<string>("");
     const [error, setError] = useState<string | null>(null);
@@ -17,6 +18,10 @@ export default function Home() {
     function handleCpfChange(event: ChangeEvent<HTMLInputElement>) {
         const numericCpf = event.target.value.replace(/\D/g, "");
         setCpf(numericCpf);
+    }
+    function handleCellphoneChange(event: ChangeEvent<HTMLInputElement>) {
+        const numericCellphone = event.target.value.replace(/\D/g, "");
+        setCellphone(numericCellphone);
     }
 
     async function handleSubmit() {
@@ -37,6 +42,12 @@ export default function Home() {
 
         if (!email) {
             setError("E-Mail inválido.");
+            setIsLoading(false);
+            return;
+        }
+        
+        if (!cellphone) {
+            setError("Celular inválido.");
             setIsLoading(false);
             return;
         }
@@ -64,6 +75,7 @@ export default function Home() {
                 name,
                 cpf,
                 email,
+                cellphone,
                 password: cpf,
                 role: 'cliente',
                 birthday,
@@ -106,6 +118,10 @@ export default function Home() {
                     <label className={styles.newClientLabel}>
                         E-Mail
                         <input className={styles.newClientInput} value={email} onChange={(event => {setEmail(event.target.value)})}/>
+                    </label>
+                    <label className={styles.newClientLabel}>
+                        Celular
+                        <input className={styles.newClientInput} type='text' inputMode='numeric' maxLength={11} value={cellphone} onChange={handleCellphoneChange}/>
                     </label>
                     <label className={styles.newClientLabel}>
                         Data Nascimento

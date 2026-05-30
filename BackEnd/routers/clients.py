@@ -35,4 +35,4 @@ async def get_all_clients(db: db_dependency, user: user_dependency):
     if user.get("user_role") != "nutricionista":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Usuário sem permissão.")
     
-    return db.query(Users).filter(Users.role == "cliente").all()
+    return db.query(Users).filter(Users.role == "cliente").filter(Users.active == True).all()

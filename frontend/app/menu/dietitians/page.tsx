@@ -127,7 +127,7 @@ export default function Home() {
                                 <p>Nenhum cliente encontrado.</p>
                             ) : (
                                 clients.map((client) => (
-                                    <div className={styles.clientCard}>
+                                    <div key={client.id} className={styles.clientCard}>
                                         <img src="/icons/user_pfp.png" className={styles.userIcon}/>
                                         <div>
                                             <p>{client.name}</p>

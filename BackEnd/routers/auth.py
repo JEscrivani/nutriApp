@@ -31,6 +31,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 class CreateUserRequest(BaseModel):
     name: str = Field()
     email: str = Field()
+    cellphone: str = Field()
     cpf: str = Field()
     password: str = Field(min_length=6)
     role: UserRole = Field()
@@ -122,14 +123,21 @@ async def create_user(db: db_dependency, request: CreateUserRequest):
     if validade_unique:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="E-Mail já cadastrado")
 
+    validade_unique = db.query(Users).filter(Users.cellphone == request.cellphone).first()
+    if validade_unique:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Celular já cadastrado")
+
     user = Users(
         name=request.name,
         email=request.email,
         cpf=request.cpf,
+        cellphone=request.cellphone,
         password=bcrypt_context.hash(request.password),
         role=request.role,
         birthday=request.birthday,
-        gender=request.gender
+        gender=request.gender,
+        active=True,
+        created_at=date.today()
     )
     try:
         db.add(user)
